@@ -112,8 +112,8 @@ export function PropsTable({ props }: PropsTableProps) {
           bVal = b.name.toLowerCase();
           break;
         case 'line':
-          aVal = parseFloat(a.line) || 0;
-          bVal = parseFloat(b.line) || 0;
+          aVal = a.line || 0;
+          bVal = b.line || 0;
           break;
         case 'confidence':
           aVal = a.confidence_score;

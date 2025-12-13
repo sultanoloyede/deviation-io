@@ -1,0 +1,25 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[redirects]]
+  from = "/api/props/:id"
+  to = "/.netlify/functions/props-by-id"
+  status = 200
+
+[[redirects]]
+  from = "/api/props/stats"
+  to = "/.netlify/functions/stats"
+  status = 200
+
+[[redirects]]
+  from = "/api/props"
+  to = "/.netlify/functions/props"
+  status = 200
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["pg-native"]
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

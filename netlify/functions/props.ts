@@ -25,7 +25,7 @@ export const handler: Handler = async (event) => {
 
   try {
     const pool = getPool();
-    const { limit = '100', min_confidence = '0', player } = event.queryStringParameters || {};
+    const { min_confidence = '0', player } = event.queryStringParameters || {};
 
     let query = `
       SELECT * FROM nba_props
@@ -39,8 +39,7 @@ export const handler: Handler = async (event) => {
       params.push(`%${player}%`);
     }
 
-    query += ` ORDER BY confidence_score DESC LIMIT $${params.length + 1}`;
-    params.push(limit);
+    query += ` ORDER BY confidence_score DESC`;
 
     const result = await pool.query(query, params);
 

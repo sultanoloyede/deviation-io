@@ -112,44 +112,44 @@ export function PropsTable({ props }: PropsTableProps) {
           bVal = b.name.toLowerCase();
           break;
         case 'line':
-          aVal = a.line || 0;
-          bVal = b.line || 0;
+          aVal = Number(a.line) || 0;
+          bVal = Number(b.line) || 0;
           break;
         case 'confidence':
-          aVal = a.confidence_score;
-          bVal = b.confidence_score;
+          aVal = Number(a.confidence_score);
+          bVal = Number(b.confidence_score);
           break;
         case 'last_5':
-          aVal = a.last_5 ?? -1;
-          bVal = b.last_5 ?? -1;
+          aVal = a.last_5 !== null ? Number(a.last_5) : -1;
+          bVal = b.last_5 !== null ? Number(b.last_5) : -1;
           break;
         case 'last_10':
-          aVal = a.last_10 ?? -1;
-          bVal = b.last_10 ?? -1;
+          aVal = a.last_10 !== null ? Number(a.last_10) : -1;
+          bVal = b.last_10 !== null ? Number(b.last_10) : -1;
           break;
         case 'h2h':
-          aVal = a.h2h ?? -1;
-          bVal = b.h2h ?? -1;
+          aVal = a.h2h !== null ? Number(a.h2h) : -1;
+          bVal = b.h2h !== null ? Number(b.h2h) : -1;
           break;
         case 'this_season':
-          aVal = a.this_season ?? -1;
-          bVal = b.this_season ?? -1;
+          aVal = a.this_season !== null ? Number(a.this_season) : -1;
+          bVal = b.this_season !== null ? Number(b.this_season) : -1;
           break;
         case 'last_season':
-          aVal = a.last_season ?? -1;
-          bVal = b.last_season ?? -1;
+          aVal = a.last_season !== null ? Number(a.last_season) : -1;
+          bVal = b.last_season !== null ? Number(b.last_season) : -1;
           break;
         case 'opp_pts_rank':
-          aVal = a.opp_pts_rank ?? 999;
-          bVal = b.opp_pts_rank ?? 999;
+          aVal = a.opp_pts_rank !== null ? Number(a.opp_pts_rank) : 999;
+          bVal = b.opp_pts_rank !== null ? Number(b.opp_pts_rank) : 999;
           break;
         case 'opp_reb_rank':
-          aVal = a.opp_reb_rank ?? 999;
-          bVal = b.opp_reb_rank ?? 999;
+          aVal = a.opp_reb_rank !== null ? Number(a.opp_reb_rank) : 999;
+          bVal = b.opp_reb_rank !== null ? Number(b.opp_reb_rank) : 999;
           break;
         case 'opp_ast_rank':
-          aVal = a.opp_ast_rank ?? 999;
-          bVal = b.opp_ast_rank ?? 999;
+          aVal = a.opp_ast_rank !== null ? Number(a.opp_ast_rank) : 999;
+          bVal = b.opp_ast_rank !== null ? Number(b.opp_ast_rank) : 999;
           break;
         default:
           return 0;

@@ -14,6 +14,7 @@ export default function Home() {
   const [filters, setFilters] = useState({
     player: "",
     minConfidence: 0.7,
+    propType: "all",
   });
 
   useEffect(() => {
@@ -35,12 +36,23 @@ export default function Home() {
     loadProps();
   }, [filters]);
 
+  const filteredProps = props.filter((prop) => {
+    if (filters.propType === "all") return true;
+    if (filters.propType === "over") {
+      return prop.prop.toLowerCase().includes("over");
+    }
+    if (filters.propType === "under") {
+      return prop.prop.toLowerCase().includes("under");
+    }
+    return true;
+  });
+
   const stats = {
-    totalProps: props.length,
+    totalProps: filteredProps.length,
     avgConfidence:
-      props.reduce((sum, p) => sum + p.confidence_score, 0) /
-      (props.length || 1),
-    maxConfidence: Math.max(...props.map((p) => p.confidence_score), 0),
+      filteredProps.reduce((sum, p) => sum + p.confidence_score, 0) /
+      (filteredProps.length || 1),
+    maxConfidence: Math.max(...filteredProps.map((p) => p.confidence_score), 0),
   };
 
   return (
@@ -61,7 +73,7 @@ export default function Home() {
         <>
           <PropsStats {...stats} />
           <PropsFilter onFilterChange={setFilters} />
-          <PropsTable props={props} />
+          <PropsTable props={filteredProps} />
         </>
       )}
     </main>

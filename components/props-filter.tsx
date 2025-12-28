@@ -13,21 +13,23 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 
 interface PropsFilterProps {
-  onFilterChange: (filters: { player: string; minConfidence: number }) => void;
+  onFilterChange: (filters: { player: string; minConfidence: number; propType: string }) => void;
 }
 
 export function PropsFilter({ onFilterChange }: PropsFilterProps) {
   const [player, setPlayer] = useState("");
   const [minConfidence, setMinConfidence] = useState(0.7);
+  const [propType, setPropType] = useState("all");
 
   const handleApplyFilters = () => {
-    onFilterChange({ player, minConfidence });
+    onFilterChange({ player, minConfidence, propType });
   };
 
   const handleReset = () => {
     setPlayer("");
     setMinConfidence(0.7);
-    onFilterChange({ player: "", minConfidence: 0.7 });
+    setPropType("all");
+    onFilterChange({ player: "", minConfidence: 0.7, propType: "all" });
   };
 
   return (
@@ -53,6 +55,20 @@ export function PropsFilter({ onFilterChange }: PropsFilterProps) {
               <SelectItem value="0.75">75% or higher</SelectItem>
               <SelectItem value="0.80">80% or higher</SelectItem>
               <SelectItem value="0.85">85% or higher</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={propType}
+            onValueChange={(value) => setPropType(value)}
+          >
+            <SelectTrigger className="md:w-48">
+              <SelectValue placeholder="Prop Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Props</SelectItem>
+              <SelectItem value="over">Overs Only</SelectItem>
+              <SelectItem value="under">Unders Only</SelectItem>
             </SelectContent>
           </Select>
 

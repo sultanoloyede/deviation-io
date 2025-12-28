@@ -11,25 +11,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 interface PropsFilterProps {
-  onFilterChange: (filters: { player: string; minConfidence: number; propType: string }) => void;
+  onFilterChange: (filters: { player: string; minConfidence: number; propType: string; potentialRead: boolean }) => void;
 }
 
 export function PropsFilter({ onFilterChange }: PropsFilterProps) {
   const [player, setPlayer] = useState("");
   const [minConfidence, setMinConfidence] = useState(0.7);
   const [propType, setPropType] = useState("all");
+  const [potentialRead, setPotentialRead] = useState(false);
 
   const handleApplyFilters = () => {
-    onFilterChange({ player, minConfidence, propType });
+    onFilterChange({ player, minConfidence, propType, potentialRead });
   };
 
   const handleReset = () => {
     setPlayer("");
     setMinConfidence(0.7);
     setPropType("all");
-    onFilterChange({ player: "", minConfidence: 0.7, propType: "all" });
+    setPotentialRead(false);
+    onFilterChange({ player: "", minConfidence: 0.7, propType: "all", potentialRead: false });
   };
 
   return (
@@ -71,6 +74,20 @@ export function PropsFilter({ onFilterChange }: PropsFilterProps) {
               <SelectItem value="under">Unders Only</SelectItem>
             </SelectContent>
           </Select>
+
+          <div className="flex items-center gap-2 md:w-48">
+            <Switch
+              id="potential-read"
+              checked={potentialRead}
+              onCheckedChange={setPotentialRead}
+            />
+            <label
+              htmlFor="potential-read"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Potential Read
+            </label>
+          </div>
 
           <div className="flex gap-2">
             <Button onClick={handleApplyFilters}>Apply Filters</Button>

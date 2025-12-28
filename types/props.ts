@@ -11,6 +11,7 @@ export interface NBAProp {
   this_season: number | null;
   last_season: number | null;
   h2h: number | null;
+  lineup_pct: number | null;
   opp_pts_rank: number | null;
   opp_reb_rank: number | null;
   opp_ast_rank: number | null;

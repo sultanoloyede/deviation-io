@@ -15,6 +15,7 @@ export default function Home() {
     player: "",
     minConfidence: 0.7,
     propType: "all",
+    potentialRead: false,
   });
 
   useEffect(() => {
@@ -37,13 +38,34 @@ export default function Home() {
   }, [filters]);
 
   const filteredProps = props.filter((prop) => {
-    if (filters.propType === "all") return true;
-    if (filters.propType === "over") {
-      return prop.prop.toLowerCase().includes("over");
+    // Prop type filter
+    if (filters.propType !== "all") {
+      if (filters.propType === "over" && !prop.prop.toLowerCase().includes("over")) {
+        return false;
+      }
+      if (filters.propType === "under" && !prop.prop.toLowerCase().includes("under")) {
+        return false;
+      }
     }
-    if (filters.propType === "under") {
-      return prop.prop.toLowerCase().includes("under");
+
+    // Potential Read filter
+    if (filters.potentialRead) {
+      const isOver = prop.prop.toLowerCase().includes("over");
+
+      // Common checks: last 5 and last 10 must be >= 80%
+      const last5Check = (prop.last_5 ?? 0) >= 0.80;
+      const last10Check = (prop.last_10 ?? 0) >= 0.80;
+
+      // Lineup check depends on OVER vs UNDER
+      const lineupCheck = isOver
+        ? (prop.lineup_pct ?? 0) >= 0.73  // OVER: >= 73%
+        : (prop.lineup_pct ?? 1) <= 0.27; // UNDER: <= 27%
+
+      if (!(last5Check && last10Check && lineupCheck)) {
+        return false;
+      }
     }
+
     return true;
   });
 

@@ -31,9 +31,25 @@ export function PropsTable({ props }: PropsTableProps) {
     return <Badge variant="secondary">Fair</Badge>;
   };
 
-  const getCellClasses = (value: number | null) => {
+  const isPotentialRead = (prop: NBAProp) => {
+    // Last 5 above 80%
+    const last5Check = (prop.last_5 ?? 0) >= 0.80;
+    // Last 10 above 80%
+    const last10Check = (prop.last_10 ?? 0) >= 0.80;
+    // Lineup pct above 70%
+    const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
+    // Opp strength less than 0.5
+    const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
+    // H2H at least 50%
+    const h2hCheck = (prop.h2h ?? 0) >= 0.50;
+
+    return last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck;
+  };
+
+  const getCellClasses = (value: number | null, isUnder: boolean = false) => {
     if (value === null) return "";
-    const percentage = value * 100;
+    // For under props, invert the percentage
+    const percentage = isUnder ? (1 - value) * 100 : value * 100;
 
     if (percentage >= 80)
       return "bg-gradient-to-t from-green-500/30 via-green-500/0 to-transparent rounded-md";
@@ -44,9 +60,10 @@ export function PropsTable({ props }: PropsTableProps) {
     return "bg-gradient-to-t from-red-500/30 via-red-500/0 to-transparent rounded-md";
   };
 
-  const renderPercentage = (value: number | null) => {
+  const renderPercentage = (value: number | null, isUnder: boolean = false) => {
     if (value === null) return "N/A";
-    const percentage = value * 100;
+    // For under props, invert the percentage to show how often it went under
+    const percentage = isUnder ? (1 - value) * 100 : value * 100;
 
     let textColorClass = "";
     if (percentage >= 80) textColorClass = "text-green-600 font-semibold";
@@ -172,13 +189,14 @@ export function PropsTable({ props }: PropsTableProps) {
     );
   };
 
-  const getSemiCircleColor = (column: SortColumn, value: number | null) => {
+  const getSemiCircleColor = (column: SortColumn, value: number | null, isUnder: boolean = false) => {
     if (sortColumn !== column) {
       return "border-transparent group-hover:border-white/5";
     }
 
     if (value === null) return "border-gray-400";
-    const percentage = value * 100;
+    // For under props, invert the percentage
+    const percentage = isUnder ? (1 - value) * 100 : value * 100;
 
     if (percentage >= 80) return "border-green-600";
     if (percentage >= 70) return "border-yellow-600";
@@ -234,7 +252,9 @@ export function PropsTable({ props }: PropsTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedProps.map((prop) => (
+            {sortedProps.map((prop) => {
+              const isUnder = prop.prop.toLowerCase().includes("under");
+              return (
               <TableRow
                 key={prop.id}
                 className="group rounded-lg hover:bg-white/5"
@@ -243,6 +263,9 @@ export function PropsTable({ props }: PropsTableProps) {
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-white">{prop.name}</span>
+                      {isPotentialRead(prop) && (
+                        <Badge className="bg-purple-600 text-xs">POTENTIAL READ</Badge>
+                      )}
                       <span className="text-gray-400">•</span>
                       <span className="text-gray-500">{prop.matchup}</span>
                     </div>
@@ -260,34 +283,34 @@ export function PropsTable({ props }: PropsTableProps) {
                   </span>
                 </TableCell>
                 <TableCell
-                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.last_5)}`}
+                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.last_5, isUnder)}`}
                 >
-                  {renderPercentage(prop.last_5)}
-                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('last_5', prop.last_5)}`} />
+                  {renderPercentage(prop.last_5, isUnder)}
+                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('last_5', prop.last_5, isUnder)}`} />
                 </TableCell>
                 <TableCell
-                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.last_10)}`}
+                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.last_10, isUnder)}`}
                 >
-                  {renderPercentage(prop.last_10)}
-                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('last_10', prop.last_10)}`} />
+                  {renderPercentage(prop.last_10, isUnder)}
+                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('last_10', prop.last_10, isUnder)}`} />
                 </TableCell>
                 <TableCell
-                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.h2h)}`}
+                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.h2h, isUnder)}`}
                 >
-                  {renderPercentage(prop.h2h)}
-                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('h2h', prop.h2h)}`} />
+                  {renderPercentage(prop.h2h, isUnder)}
+                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('h2h', prop.h2h, isUnder)}`} />
                 </TableCell>
                 <TableCell
-                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.this_season)}`}
+                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.this_season, isUnder)}`}
                 >
-                  {renderPercentage(prop.this_season)}
-                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('this_season', prop.this_season)}`} />
+                  {renderPercentage(prop.this_season, isUnder)}
+                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('this_season', prop.this_season, isUnder)}`} />
                 </TableCell>
                 <TableCell
-                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.last_season)}`}
+                  className={`text-center relative w-24 h-16 ${getCellClasses(prop.last_season, isUnder)}`}
                 >
-                  {renderPercentage(prop.last_season)}
-                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('last_season', prop.last_season)}`} />
+                  {renderPercentage(prop.last_season, isUnder)}
+                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-3 rounded-t-full border-2 border-b-0 ${getSemiCircleColor('last_season', prop.last_season, isUnder)}`} />
                 </TableCell>
                 <TableCell className="text-center">
                   {renderRank(prop.opp_pts_rank)}
@@ -299,7 +322,7 @@ export function PropsTable({ props }: PropsTableProps) {
                   {renderRank(prop.opp_ast_rank)}
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
           </TableBody>
         </Table>
       </CardContent>

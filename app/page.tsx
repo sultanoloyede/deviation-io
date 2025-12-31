@@ -50,18 +50,22 @@ export default function Home() {
 
     // Potential Read filter
     if (filters.potentialRead) {
-      const isOver = prop.prop.toLowerCase().includes("over");
-
-      // Common checks: last 5 and last 10 must be >= 80%
+      // Last 5 above 80%
       const last5Check = (prop.last_5 ?? 0) >= 0.80;
+
+      // Last 10 above 80%
       const last10Check = (prop.last_10 ?? 0) >= 0.80;
 
-      // Lineup check depends on OVER vs UNDER
-      const lineupCheck = isOver
-        ? (prop.lineup_pct ?? 0) >= 0.73  // OVER: >= 73%
-        : (prop.lineup_pct ?? 1) <= 0.27; // UNDER: <= 27%
+      // Lineup pct above 70%
+      const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
 
-      if (!(last5Check && last10Check && lineupCheck)) {
+      // Opp strength less than 0.5
+      const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
+
+      // H2H at least 50%
+      const h2hCheck = (prop.h2h ?? 0) >= 0.50;
+
+      if (!(last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck)) {
         return false;
       }
     }

@@ -25,7 +25,7 @@ export const handler: Handler = async (event) => {
 
   try {
     const pool = getPool();
-    const { min_confidence = '0', player } = event.queryStringParameters || {};
+    const { min_confidence = '0', player, stat_type } = event.queryStringParameters || {};
 
     let query = `
       SELECT * FROM nba_props
@@ -35,8 +35,13 @@ export const handler: Handler = async (event) => {
     const params: any[] = [min_confidence];
 
     if (player) {
-      query += ` AND name ILIKE $2`;
+      query += ` AND name ILIKE $${params.length + 1}`;
       params.push(`%${player}%`);
+    }
+
+    if (stat_type && stat_type !== 'all') {
+      query += ` AND stat_type = $${params.length + 1}`;
+      params.push(stat_type);
     }
 
     query += ` ORDER BY confidence_score DESC`;

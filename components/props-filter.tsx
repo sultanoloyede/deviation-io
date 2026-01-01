@@ -14,25 +14,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
 interface PropsFilterProps {
-  onFilterChange: (filters: { player: string; minConfidence: number; propType: string; potentialRead: boolean }) => void;
+  onFilterChange: (filters: { player: string; minConfidence: number; propType: string; statType: string; potentialRead: boolean }) => void;
 }
 
 export function PropsFilter({ onFilterChange }: PropsFilterProps) {
   const [player, setPlayer] = useState("");
   const [minConfidence, setMinConfidence] = useState(0.7);
   const [propType, setPropType] = useState("all");
+  const [statType, setStatType] = useState("all");
   const [potentialRead, setPotentialRead] = useState(false);
 
   const handleApplyFilters = () => {
-    onFilterChange({ player, minConfidence, propType, potentialRead });
+    onFilterChange({ player, minConfidence, propType, statType, potentialRead });
   };
 
   const handleReset = () => {
     setPlayer("");
     setMinConfidence(0.7);
     setPropType("all");
+    setStatType("all");
     setPotentialRead(false);
-    onFilterChange({ player: "", minConfidence: 0.7, propType: "all", potentialRead: false });
+    onFilterChange({ player: "", minConfidence: 0.7, propType: "all", statType: "all", potentialRead: false });
   };
 
   return (
@@ -66,12 +68,28 @@ export function PropsFilter({ onFilterChange }: PropsFilterProps) {
             onValueChange={(value) => setPropType(value)}
           >
             <SelectTrigger className="md:w-48">
-              <SelectValue placeholder="Prop Type" />
+              <SelectValue placeholder="Over/Under" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Props</SelectItem>
               <SelectItem value="over">Overs Only</SelectItem>
               <SelectItem value="under">Unders Only</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={statType}
+            onValueChange={(value) => setStatType(value)}
+          >
+            <SelectTrigger className="md:w-48">
+              <SelectValue placeholder="Stat Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Stats</SelectItem>
+              <SelectItem value="PRA">PRA Only</SelectItem>
+              <SelectItem value="RA">RA Only</SelectItem>
+              <SelectItem value="PA">PA Only</SelectItem>
+              <SelectItem value="PR">PR Only</SelectItem>
             </SelectContent>
           </Select>
 

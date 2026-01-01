@@ -16,6 +16,7 @@ export interface NBAProp {
   opp_pts_rank: number | null;
   opp_reb_rank: number | null;
   opp_ast_rank: number | null;
+  stat_type: string;
   created_at: string;
 }
 

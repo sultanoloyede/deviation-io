@@ -15,6 +15,7 @@ export default function Home() {
     player: "",
     minConfidence: 0.7,
     propType: "all",
+    statType: "all",
     potentialRead: false,
   });
 
@@ -25,6 +26,7 @@ export default function Home() {
         const response = await fetchProps({
           min_confidence: filters.minConfidence,
           player: filters.player || undefined,
+          stat_type: filters.statType || undefined,
         });
         setProps(response.data);
       } catch (error) {

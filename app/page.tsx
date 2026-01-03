@@ -52,23 +52,30 @@ export default function Home() {
 
     // Potential Read filter
     if (filters.potentialRead) {
-      // Last 5 above 80%
-      const last5Check = (prop.last_5 ?? 0) >= 0.80;
+      const isUnder = prop.prop.toLowerCase().includes("under");
 
-      // Last 10 above 80%
-      const last10Check = (prop.last_10 ?? 0) >= 0.80;
+      if (isUnder) {
+        // UNDER criteria - inverse logic (looking for LOW raw percentages)
+        const last5Check = (prop.last_5 ?? 100) <= 0.20;
+        const last10Check = (prop.last_10 ?? 100) <= 0.20;
+        const lineupCheck = (prop.lineup_pct ?? 100) <= 0.30;
+        const oppStrengthCheck = (prop.opp_strength ?? 0) > 0.5;
+        const h2hCheck = (prop.h2h ?? 100) <= 0.50;
 
-      // Lineup pct above 70%
-      const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
+        if (!(last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck)) {
+          return false;
+        }
+      } else {
+        // OVER criteria - original logic (looking for HIGH percentages)
+        const last5Check = (prop.last_5 ?? 0) >= 0.80;
+        const last10Check = (prop.last_10 ?? 0) >= 0.80;
+        const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
+        const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
+        const h2hCheck = (prop.h2h ?? 0) >= 0.50;
 
-      // Opp strength less than 0.5
-      const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
-
-      // H2H at least 50%
-      const h2hCheck = (prop.h2h ?? 0) >= 0.50;
-
-      if (!(last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck)) {
-        return false;
+        if (!(last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck)) {
+          return false;
+        }
       }
     }
 

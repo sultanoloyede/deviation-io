@@ -32,18 +32,37 @@ export function PropsTable({ props }: PropsTableProps) {
   };
 
   const isPotentialRead = (prop: NBAProp) => {
-    // Last 5 above 80%
-    const last5Check = (prop.last_5 ?? 0) >= 0.80;
-    // Last 10 above 80%
-    const last10Check = (prop.last_10 ?? 0) >= 0.80;
-    // Lineup pct above 70%
-    const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
-    // Opp strength less than 0.5
-    const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
-    // H2H at least 50%
-    const h2hCheck = (prop.h2h ?? 0) >= 0.50;
+    const isUnder = prop.prop.toLowerCase().includes("under");
 
-    return last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck;
+    if (isUnder) {
+      // UNDER criteria - inverse logic (looking for LOW raw percentages)
+      // Last 5: Player went OVER the line in <=20% of games (went UNDER 80%)
+      const last5Check = (prop.last_5 ?? 100) <= 0.20;
+      // Last 10: Player went OVER the line in <=20% of games (went UNDER 80%)
+      const last10Check = (prop.last_10 ?? 100) <= 0.20;
+      // Lineup: Player went OVER the line in <=30% of games with this lineup
+      const lineupCheck = (prop.lineup_pct ?? 100) <= 0.30;
+      // Opp strength: Strong opponent (>0.5) makes it harder to score (good for under)
+      const oppStrengthCheck = (prop.opp_strength ?? 0) > 0.5;
+      // H2H: Player went OVER the line in <=50% of H2H games (went UNDER 50%+)
+      const h2hCheck = (prop.h2h ?? 100) <= 0.50;
+
+      return last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck;
+    } else {
+      // OVER criteria - original logic (looking for HIGH percentages)
+      // Last 5 above 80%
+      const last5Check = (prop.last_5 ?? 0) >= 0.80;
+      // Last 10 above 80%
+      const last10Check = (prop.last_10 ?? 0) >= 0.80;
+      // Lineup pct above 70%
+      const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
+      // Opp strength less than 0.5 (weak opponent makes it easier to score)
+      const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
+      // H2H at least 50%
+      const h2hCheck = (prop.h2h ?? 0) >= 0.50;
+
+      return last5Check && last10Check && lineupCheck && oppStrengthCheck && h2hCheck;
+    }
   };
 
   const getCellClasses = (value: number | null, isUnder: boolean = false) => {

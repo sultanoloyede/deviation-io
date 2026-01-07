@@ -42,8 +42,8 @@ export function PropsTable({ props }: PropsTableProps) {
       const last10Check = (prop.last_10 ?? 100) <= 0.20;
       // Lineup: Player went OVER the line in <=30% of games with this lineup
       const lineupCheck = (prop.lineup_pct ?? 100) <= 0.30;
-      // Opp strength: Strong opponent (>0.5) makes it harder to score (good for under)
-      const oppStrengthCheck = (prop.opp_strength ?? 0) > 0.5;
+      // Opp strength: Strong opponent (>=0.45) makes it harder to score (good for under)
+      const oppStrengthCheck = (prop.opp_strength ?? 0) >= 0.45;
       // H2H: Player went OVER the line in <=50% of H2H games (went UNDER 50%+)
       const h2hCheck = (prop.h2h ?? 100) <= 0.50;
 
@@ -56,8 +56,8 @@ export function PropsTable({ props }: PropsTableProps) {
       const last10Check = (prop.last_10 ?? 0) >= 0.80;
       // Lineup pct above 70%
       const lineupCheck = (prop.lineup_pct ?? 0) >= 0.70;
-      // Opp strength less than 0.5 (weak opponent makes it easier to score)
-      const oppStrengthCheck = (prop.opp_strength ?? 1) < 0.5;
+      // Opp strength <= 0.43 (weak opponent makes it easier to score)
+      const oppStrengthCheck = (prop.opp_strength ?? 1) <= 0.43;
       // H2H at least 50%
       const h2hCheck = (prop.h2h ?? 0) >= 0.50;
 

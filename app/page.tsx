@@ -82,16 +82,18 @@ export default function Home() {
   });
 
   return (
-    <main className="container mx-auto py-10 space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold mb-2">NBA Props Dashboard</h1>
-        <p className="text-muted-foreground">
-          High-confidence player prop recommendations for today's games
-        </p>
+    <main>
+      <div className="container mx-auto py-10">
+        <div>
+          <h1 className="text-4xl font-bold mb-2">NBA Props Dashboard</h1>
+          <p className="text-muted-foreground">
+            High-confidence player prop recommendations for today's games
+          </p>
+        </div>
       </div>
 
       {loading ? (
-        <div className="space-y-4">
+        <div className="container mx-auto space-y-4">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-96 w-full" />
         </div>
@@ -102,7 +104,9 @@ export default function Home() {
             filteredCount={filteredProps.length}
             totalCount={props.length}
           />
-          <PropsTable props={filteredProps} />
+          <div className="container mx-auto py-8">
+            <PropsTable props={filteredProps} />
+          </div>
         </>
       )}
     </main>

@@ -39,8 +39,9 @@ export function PropsFilter({ onFilterChange, filteredCount, totalCount }: Props
   };
 
   return (
-    <div className="sticky top-0 z-10 bg-black py-4 border-b border-gray-800">
-      <div className="flex flex-col md:flex-row gap-4">
+    <div className="sticky top-0 z-10 bg-background py-4 border-b border-border">
+      <div className="container mx-auto">
+        <div className="flex flex-col md:flex-row gap-4">
         <Input
           placeholder="Search player name..."
           value={player}
@@ -116,6 +117,7 @@ export function PropsFilter({ onFilterChange, filteredCount, totalCount }: Props
             {filteredCount} / {totalCount}
           </span>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { PropsTable } from "@/components/props-table";
 import { PropsFilter } from "@/components/props-filter";
-import { PropsStats } from "@/components/props-stats";
 import { fetchProps } from "@/lib/api";
 import { NBAProp } from "@/types/props";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -82,14 +81,6 @@ export default function Home() {
     return true;
   });
 
-  const stats = {
-    totalProps: filteredProps.length,
-    avgConfidence:
-      filteredProps.reduce((sum, p) => sum + p.confidence_score, 0) /
-      (filteredProps.length || 1),
-    maxConfidence: Math.max(...filteredProps.map((p) => p.confidence_score), 0),
-  };
-
   return (
     <main className="container mx-auto py-10 space-y-8">
       <div>
@@ -106,8 +97,11 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <PropsStats {...stats} />
-          <PropsFilter onFilterChange={setFilters} />
+          <PropsFilter
+            onFilterChange={setFilters}
+            filteredCount={filteredProps.length}
+            totalCount={props.length}
+          />
           <PropsTable props={filteredProps} />
         </>
       )}

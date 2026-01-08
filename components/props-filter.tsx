@@ -15,9 +15,11 @@ import { Switch } from "@/components/ui/switch";
 
 interface PropsFilterProps {
   onFilterChange: (filters: { player: string; minConfidence: number; propType: string; statType: string; potentialRead: boolean }) => void;
+  filteredCount: number;
+  totalCount: number;
 }
 
-export function PropsFilter({ onFilterChange }: PropsFilterProps) {
+export function PropsFilter({ onFilterChange, filteredCount, totalCount }: PropsFilterProps) {
   const [player, setPlayer] = useState("");
   const [minConfidence, setMinConfidence] = useState(0.7);
   const [propType, setPropType] = useState("all");
@@ -107,11 +109,14 @@ export function PropsFilter({ onFilterChange }: PropsFilterProps) {
             </label>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Button onClick={handleApplyFilters}>Apply Filters</Button>
             <Button variant="outline" onClick={handleReset}>
               Reset
             </Button>
+            <span className="text-sm text-gray-500 ml-2">
+              {filteredCount} / {totalCount}
+            </span>
           </div>
         </div>
       </CardContent>

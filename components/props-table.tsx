@@ -282,13 +282,13 @@ export function PropsTable({ props }: PropsTableProps) {
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-white">{prop.name}</span>
-                      {isPotentialRead(prop) && (
-                        <Badge className="bg-purple-600 text-xs">POTENTIAL READ</Badge>
-                      )}
                       <span className="text-gray-400">•</span>
                       <span className="text-gray-500">{prop.matchup}</span>
                     </div>
                     <div className="font-bold text-white">{prop.prop}</div>
+                    {isPotentialRead(prop) && (
+                      <Badge className="bg-purple-600 text-[10px] px-1.5 py-0 h-4 w-fit">POTENTIAL READ</Badge>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="text-left">

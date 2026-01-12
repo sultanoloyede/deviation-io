@@ -10,11 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Home() {
   const [props, setProps] = useState<NBAProp[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<{
+    player: string;
+    minConfidence: number;
+    propType: string;
+    statType: string[];
+    potentialRead: boolean;
+  }>({
     player: "",
     minConfidence: 0.7,
     propType: "all",
-    statType: "all",
+    statType: [],
     potentialRead: false,
   });
 
@@ -25,7 +31,7 @@ export default function Home() {
         const response = await fetchProps({
           min_confidence: filters.minConfidence,
           player: filters.player || undefined,
-          stat_type: filters.statType || undefined,
+          stat_type: filters.statType.length > 0 ? filters.statType : undefined,
         });
         setProps(response.data);
       } catch (error) {

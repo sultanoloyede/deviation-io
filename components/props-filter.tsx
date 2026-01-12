@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,19 +11,46 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { ChevronDownIcon } from "lucide-react";
 
 interface PropsFilterProps {
-  onFilterChange: (filters: { player: string; minConfidence: number; propType: string; statType: string; potentialRead: boolean }) => void;
+  onFilterChange: (filters: { player: string; minConfidence: number; propType: string; statType: string[]; potentialRead: boolean }) => void;
   filteredCount: number;
   totalCount: number;
 }
+
+const STAT_TYPES = [
+  { value: "PRA", label: "PRA" },
+  { value: "RA", label: "RA" },
+  { value: "PA", label: "PA" },
+  { value: "PR", label: "PR" },
+];
 
 export function PropsFilter({ onFilterChange, filteredCount, totalCount }: PropsFilterProps) {
   const [player, setPlayer] = useState("");
   const [minConfidence, setMinConfidence] = useState(0.7);
   const [propType, setPropType] = useState("all");
-  const [statType, setStatType] = useState("all");
+  const [statType, setStatType] = useState<string[]>([]);
   const [potentialRead, setPotentialRead] = useState(false);
+  const [isStatDropdownOpen, setIsStatDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsStatDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleStatTypeToggle = (value: string) => {
+    setStatType((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+  };
 
   const handleApplyFilters = () => {
     onFilterChange({ player, minConfidence, propType, statType, potentialRead });
@@ -33,9 +60,9 @@ export function PropsFilter({ onFilterChange, filteredCount, totalCount }: Props
     setPlayer("");
     setMinConfidence(0.7);
     setPropType("all");
-    setStatType("all");
+    setStatType([]);
     setPotentialRead(false);
-    onFilterChange({ player: "", minConfidence: 0.7, propType: "all", statType: "all", potentialRead: false });
+    onFilterChange({ player: "", minConfidence: 0.7, propType: "all", statType: [], potentialRead: false });
   };
 
   return (
@@ -78,21 +105,43 @@ export function PropsFilter({ onFilterChange, filteredCount, totalCount }: Props
           </SelectContent>
         </Select>
 
-        <Select
-          value={statType}
-          onValueChange={(value) => setStatType(value)}
-        >
-          <SelectTrigger className="md:w-48">
-            <SelectValue placeholder="Stat Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Stats</SelectItem>
-            <SelectItem value="PRA">PRA Only</SelectItem>
-            <SelectItem value="RA">RA Only</SelectItem>
-            <SelectItem value="PA">PA Only</SelectItem>
-            <SelectItem value="PR">PR Only</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="relative md:w-48" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setIsStatDropdownOpen(!isStatDropdownOpen)}
+            className="border-input data-[placeholder]:text-muted-foreground flex w-full items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none h-9 hover:bg-accent/50"
+          >
+            <span className={statType.length === 0 ? "text-muted-foreground" : ""}>
+              {statType.length === 0
+                ? "Stat Type"
+                : statType.length === STAT_TYPES.length
+                ? "All Stats"
+                : `${statType.length} selected`}
+            </span>
+            <ChevronDownIcon className="size-4 opacity-50" />
+          </button>
+
+          {isStatDropdownOpen && (
+            <div className="absolute z-50 mt-1 w-full min-w-[8rem] rounded-md border bg-popover shadow-md animate-in fade-in-0 zoom-in-95">
+              <div className="p-1">
+                {STAT_TYPES.map((stat) => (
+                  <label
+                    key={stat.value}
+                    className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={statType.includes(stat.value)}
+                      onChange={() => handleStatTypeToggle(stat.value)}
+                      className="size-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <span>{stat.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 md:w-48">
           <Switch

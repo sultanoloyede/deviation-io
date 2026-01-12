@@ -6,7 +6,7 @@ export async function fetchProps(params?: {
   limit?: number;
   min_confidence?: number;
   player?: string;
-  stat_type?: string;
+  stat_type?: string | string[];
 }): Promise<PropsResponse> {
   const searchParams = new URLSearchParams();
 
@@ -14,7 +14,16 @@ export async function fetchProps(params?: {
   if (params?.min_confidence)
     searchParams.set("min_confidence", params.min_confidence.toString());
   if (params?.player) searchParams.set("player", params.player);
-  if (params?.stat_type && params.stat_type !== "all") searchParams.set("stat_type", params.stat_type);
+  if (params?.stat_type) {
+    if (Array.isArray(params.stat_type)) {
+      // Join multiple stat types with comma
+      if (params.stat_type.length > 0) {
+        searchParams.set("stat_type", params.stat_type.join(","));
+      }
+    } else if (params.stat_type !== "all") {
+      searchParams.set("stat_type", params.stat_type);
+    }
+  }
 
   const url = `${API_BASE_URL}/props?${searchParams.toString()}`;
   const response = await fetch(url, { cache: "no-store" });

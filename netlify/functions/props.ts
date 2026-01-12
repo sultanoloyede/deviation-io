@@ -40,8 +40,13 @@ export const handler: Handler = async (event) => {
     }
 
     if (stat_type && stat_type !== 'all') {
-      query += ` AND stat_type = $${params.length + 1}`;
-      params.push(stat_type);
+      // Handle multiple stat types separated by comma
+      const statTypes = stat_type.split(',').filter(Boolean);
+      if (statTypes.length > 0) {
+        const placeholders = statTypes.map((_, i) => `$${params.length + i + 1}`).join(', ');
+        query += ` AND stat_type IN (${placeholders})`;
+        params.push(...statTypes);
+      }
     }
 
     query += ` ORDER BY confidence_score DESC`;

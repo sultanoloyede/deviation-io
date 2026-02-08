@@ -25,3 +25,30 @@ export interface PropsResponse {
   count: number;
   data: NBAProp[];
 }
+
+export interface PerformanceGroup {
+  label: string;
+  total: number;
+  hits: number;
+  misses: number;
+  hit_rate: number;
+}
+
+export interface PerformanceData {
+  by_team: PerformanceGroup[];
+  by_confidence: PerformanceGroup[];
+  by_stat_type: PerformanceGroup[];
+  by_direction: PerformanceGroup[];
+}
+
+export interface PerformanceResponse {
+  success: boolean;
+  period: string;
+  data: PerformanceData;
+  summary: {
+    total: number;
+    hits: number;
+    misses: number;
+    hit_rate: number;
+  };
+}

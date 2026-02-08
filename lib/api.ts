@@ -1,4 +1,4 @@
-import { NBAProp, PropsResponse } from "@/types/props";
+import { NBAProp, PropsResponse, PerformanceResponse } from "@/types/props";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
 
@@ -30,6 +30,19 @@ export async function fetchProps(params?: {
 
   if (!response.ok) {
     throw new Error("Failed to fetch props");
+  }
+
+  return response.json();
+}
+
+export async function fetchPerformance(
+  period: string = "all-time"
+): Promise<PerformanceResponse> {
+  const url = `${API_BASE_URL}/performance?period=${period}`;
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch performance data");
   }
 
   return response.json();

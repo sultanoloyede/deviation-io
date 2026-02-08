@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { PropsTable } from "@/components/props-table";
 import { PropsFilter } from "@/components/props-filter";
 import { fetchProps } from "@/lib/api";
@@ -12,15 +12,17 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<{
     player: string;
-    minConfidence: number;
+    minConfidence: string;
     propType: string;
     statType: string[];
+    teams: string[];
     potentialRead: boolean;
   }>({
     player: "",
-    minConfidence: 0.7,
+    minConfidence: "all",
     propType: "all",
     statType: [],
+    teams: [],
     potentialRead: false,
   });
 
@@ -29,7 +31,7 @@ export default function Home() {
       setLoading(true);
       try {
         const response = await fetchProps({
-          min_confidence: filters.minConfidence,
+          min_confidence: filters.minConfidence !== "all" ? parseFloat(filters.minConfidence) : undefined,
           player: filters.player || undefined,
           stat_type: filters.statType.length > 0 ? filters.statType : undefined,
         });
@@ -44,7 +46,26 @@ export default function Home() {
     loadProps();
   }, [filters]);
 
+  // Extract unique player teams (first team in matchup is always the player's team)
+  // Matchup formats: "ATL vs CHA" (home) or "CHA @ ATL" (away)
+  const teams = useMemo(() => {
+    const teamSet = new Set<string>();
+    props.forEach((p) => {
+      const playerTeam = p.matchup.split(/\s+(?:vs|@)\s+/i)[0]?.trim();
+      if (playerTeam) teamSet.add(playerTeam);
+    });
+    return Array.from(teamSet).sort();
+  }, [props]);
+
   const filteredProps = props.filter((prop) => {
+    // Team filter - first team in matchup is the player's team
+    if (filters.teams.length > 0) {
+      const playerTeam = prop.matchup.split(/\s+(?:vs|@)\s+/i)[0]?.trim();
+      if (!playerTeam || !filters.teams.includes(playerTeam)) {
+        return false;
+      }
+    }
+
     // Prop type filter
     if (filters.propType !== "all") {
       if (filters.propType === "over" && !prop.prop.toLowerCase().includes("over")) {
@@ -98,7 +119,7 @@ export default function Home() {
         </div>
       </div>
 
-      {loading ? (
+      {loading && props.length === 0 ? (
         <div className="container mx-auto space-y-4">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-96 w-full" />
@@ -109,9 +130,14 @@ export default function Home() {
             onFilterChange={setFilters}
             filteredCount={filteredProps.length}
             totalCount={props.length}
+            teams={teams}
           />
           <div className="container mx-auto py-8">
-            <PropsTable props={filteredProps} />
+            {loading ? (
+              <Skeleton className="h-96 w-full" />
+            ) : (
+              <PropsTable props={filteredProps} />
+            )}
           </div>
         </>
       )}

@@ -3,6 +3,11 @@
   publish = ".next"
 
 [[redirects]]
+  from = "/api/performance"
+  to = "/.netlify/functions/performance"
+  status = 200
+
+[[redirects]]
   from = "/api/props/:id"
   to = "/.netlify/functions/props-by-id"
   status = 200
